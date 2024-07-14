@@ -35,13 +35,13 @@ eval1 :: Term -> Maybe Term
 eval1 (TmIf TmTrue t _) = Just t
 eval1 (TmIf TmFalse _ t) = Just t
 eval1 (TmIf t1 t2 t3) = fmap (\t -> TmIf t t2 t3) $ eval1 t1
-eval1 (TmSucc t) = fmap (\t' -> TmSucc t') $ eval1 t
+eval1 (TmSucc t) = fmap TmSucc $ eval1 t
 eval1 (TmPred TmZero) = Just TmZero 
 eval1 (TmPred (TmSucc t)) | isNumericalVal t = Just t
-eval1 (TmPred t) = fmap (\t' -> TmPred t') $ eval1 t
+eval1 (TmPred t) = fmap TmPred $ eval1 t
 eval1 (TmIsZero TmZero) = Just TmTrue
 eval1 (TmIsZero (TmSucc t)) | isNumericalVal t = Just TmFalse
-eval1 (TmIsZero t) = fmap (\t' -> TmIsZero t') $ eval1 t
+eval1 (TmIsZero t) = fmap TmIsZero $ eval1 t
 eval1 _ = Nothing 
 
 eval :: Term -> Term
@@ -61,9 +61,9 @@ parser = mdo
                         ->> rules <<- whiteSpace <<- char ')' <<- whiteSpace
   embeddedRules <- Fb.newRule $ embeddedRulesParen // embeddedRulesNoParen
 
-  zeroRule <- Fb.newRule $ char '0' ## \_ -> TmZero
-  falseRule <- Fb.newRule $ text "false" ## \_ -> TmFalse
-  trueRule <- Fb.newRule $ text "true" ## \_ -> TmTrue
+  zeroRule <- Fb.newRule $ char '0' ## const TmZero
+  falseRule <- Fb.newRule $ text "false" ## const TmFalse
+  trueRule <- Fb.newRule $ text "true" ## const TmTrue
   isZeroRule <- Fb.newRule $ text "iszero" ->> embeddedRules ## TmIsZero 
   predRule <- Fb.newRule $ text "pred" ->> embeddedRules ## TmPred
   succRule <- Fb.newRule $ text "succ" ->> embeddedRules ## TmSucc 
