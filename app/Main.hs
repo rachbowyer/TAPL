@@ -50,7 +50,7 @@ eval t = case eval1 t of
   Nothing -> t
 
 
--- Simple parser. A PEG packrack parser using Frisby library
+-- Simple parser. A PEG packrat parser using Frisby library
 -- Parenthesis are optional, but if used must balance
 
 parser :: forall s . PM s (P s Term)
@@ -84,4 +84,4 @@ main = do
 
 
 -- Example
--- echo "if (iszero (pred (pred (succ 0)))) then succ 0 else 0"  | cabal run tapl
+-- echo "if (iszero (pred (pred (succ 0)))) then succ 0 else false"  | cabal run tapl
